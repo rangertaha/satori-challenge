@@ -86,9 +86,9 @@ del o['13']
 
 channel = "air-traffic"
 endpoint = "wss://open-data.api.satori.com"
-appkey = "8aDF97c4CC03d0FF8508351CBE3Edab3"
+appkey = ""
 role = "air-traffic"
-secret = "A9639B1C5a3BF30CCF9eeeBdF73B2aF8"
+secret = ""
 
 def main():
     with make_client(endpoint=endpoint, appkey=appkey) as client:
