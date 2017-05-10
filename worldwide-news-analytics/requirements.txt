@@ -1,0 +1,4 @@
+
+elasticsearch==5.1.0
+satori-sdk-python==1.0.2
+
