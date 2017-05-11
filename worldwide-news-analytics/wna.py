@@ -12,9 +12,9 @@ import satori.rtm.auth as auth
 redis_host = '127.0.0.1'
 channel = "worldwide-news-analysis"
 endpoint = "wss://open-data.api.satori.com"
-appkey = "8aDF97c4CC03d0FF8508351CBE3Edab3"
+appkey = ""
 role = "worldwide-news-analysis"
-secret = "d5e4E6ddFdb275eaFc54df5Ff9e7f182"
+secret = ""
 
 
 
