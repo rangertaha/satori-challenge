@@ -1,13 +1,14 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+"""
+
+
+"""
 import sys
 import time
-import json
-import datetime
 import threading
 
-import pytz
 import requests
-import pandas
-
 from satori.rtm.client import make_client
 import satori.rtm.auth as auth
 
@@ -20,47 +21,34 @@ secret = ""
 
 
 def get_data():
-    r = requests.get('https://planefinder.net/endpoints/update.php')
-    row = {}
+    results = []
+    r = requests.get(
+        'https://data-live.flightradar24.com/zones/fcgi/feed.js'
+        '?bounds=83.68,-72.22,-264.73,264.73&faa=1&mlat=1&flarm=1'
+        '&adsb=1&gnd=1&air=1&vehicles=1&estimated=1&maxage=7200&gli'
+        'ders=1&stats=1', headers={'User-Agent': 'Mozilla/4.0 (comp'
+            'atible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001)'})
     data = r.json()
-    planes = data['planes']
-    keys = planes.keys()
-    for a in keys:
-        for b in planes[a].keys():
-            row = {
-                'id': b,
-                'list': planes[a].keys(),
-            }
+    print data
 
-    df = pandas.DataFrame(planes['0'])
-    ndf = df.transpose()
-
-    ndf.columns = ["aircraft", "flight", "callsign", "lat", "lon", "altitude",
-                   "course", "speed", "time", "9", 'flight_no', 'origin-dest',
-                   "13"]
-    o = ndf
-    o['time'] = o['time'].apply(_time)
-    o['time'] = pandas.to_datetime(o.time)
-    o = o.sort_values(by='time')
-    o['origin'] = o['origin-dest'].apply(_origin)
-    o['destination'] = o['origin-dest'].apply(_destination)
-    del o['origin-dest']
-    del o['13']
-    return o
-
-
-def _time(t):
-    return datetime.datetime.fromtimestamp(
-        int(t), pytz.utc).strftime('%Y-%m-%d %H:%M:%S')
-
-
-def _origin(od):
-    return od[:3]
-
-
-def _destination(od):
-    return od[len(od) - 3:]
-
+    for key in data.keys():
+        if isinstance(data[key], list):
+            for l in data[key]:
+                if isinstance(l, basestring):
+                     yield {
+                        'lat': data[key][1],
+                        'lon': data[key][2],
+                        'course': data[key][3],
+                        'altitude': data[key][4],
+                        'speed': data[key][5],
+                        'aircraft': data[key][8],
+                        'registration': data[key][9],
+                        'time': data[key][10],
+                        'origin': data[key][11],
+                        'destination': data[key][12],
+                        'flight': data[key][13],
+                        'callsign': data[key][16]
+                    }
 
 def main():
     with make_client(endpoint=endpoint, appkey=appkey) as client:
@@ -78,17 +66,15 @@ def main():
         client.authenticate(auth_delegate, auth_callback)
 
         def publish_callback(ack):
-            print('Publish ack:', ack)
+            #print('Publish ack:', ack)
+            pass
 
         while True:
-            # Downloads the data every 40 seconds
             data = get_data()
-            for i, r in data.iterrows():
-                time.sleep(0.005)
-                msg = json.loads(r.to_json())
+            for i in get_data():
                 client.publish(
-                    channel, message=msg, callback=publish_callback)
-
+                    channel, message=i, callback=publish_callback)
+                time.sleep(0.001)
 
 if __name__ == '__main__':
     main()
