@@ -15,9 +15,9 @@ import satori.rtm.auth as auth
 
 channel = "air-traffic"
 endpoint = "wss://open-data.api.satori.com"
-appkey = ""
+appkey = "8aDF97c4CC03d0FF8508351CBE3Edab3"
 role = "air-traffic"
-secret = ""
+secret = "A9639B1C5a3BF30CCF9eeeBdF73B2aF8"
 
 
 def get_data():
@@ -29,26 +29,23 @@ def get_data():
         'ders=1&stats=1', headers={'User-Agent': 'Mozilla/4.0 (comp'
             'atible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001)'})
     data = r.json()
-    print data
 
     for key in data.keys():
         if isinstance(data[key], list):
-            for l in data[key]:
-                if isinstance(l, basestring):
-                     yield {
-                        'lat': data[key][1],
-                        'lon': data[key][2],
-                        'course': data[key][3],
-                        'altitude': data[key][4],
-                        'speed': data[key][5],
-                        'aircraft': data[key][8],
-                        'registration': data[key][9],
-                        'time': data[key][10],
-                        'origin': data[key][11],
-                        'destination': data[key][12],
-                        'flight': data[key][13],
-                        'callsign': data[key][16]
-                    }
+             yield {
+                'lat': data[key][1],
+                'lon': data[key][2],
+                'course': data[key][3],
+                'altitude': data[key][4],
+                'speed': data[key][5],
+                'aircraft': data[key][8],
+                'registration': data[key][9],
+                'time': data[key][10],
+                'origin': data[key][11],
+                'destination': data[key][12],
+                'flight': data[key][13],
+                'callsign': data[key][16]
+            }
 
 def main():
     with make_client(endpoint=endpoint, appkey=appkey) as client:
@@ -72,6 +69,7 @@ def main():
         while True:
             data = get_data()
             for i in get_data():
+                print i
                 client.publish(
                     channel, message=i, callback=publish_callback)
                 time.sleep(0.001)
