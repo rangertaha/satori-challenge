@@ -93,8 +93,6 @@ def main():
                     if loc:
                         msg.update(loc)
 
-                    open("/opt/zmap/ip.txt", "a").write(msg.get('ip')+'\n')
-
                     client.publish(
                         channel, message=msg, callback=publish_callback)
 
