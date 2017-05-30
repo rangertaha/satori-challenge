@@ -17,7 +17,6 @@ role = "worldwide-news-analysis"
 secret = ""
 
 
-
 def main():
     WAIT_TIME = 0
     with make_client(endpoint=endpoint, appkey=appkey) as client:
