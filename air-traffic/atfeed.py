@@ -21,7 +21,6 @@ secret = "A9639B1C5a3BF30CCF9eeeBdF73B2aF8"
 
 
 def get_data():
-    results = []
     r = requests.get(
         'https://data-live.flightradar24.com/zones/fcgi/feed.js'
         '?bounds=83.68,-72.22,-264.73,264.73&faa=1&mlat=1&flarm=1'
@@ -68,7 +67,6 @@ def main():
             pass
 
         while True:
-            data = get_data()
             for i in get_data():
                 print i
                 client.publish(
