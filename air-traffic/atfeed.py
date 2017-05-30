@@ -47,6 +47,7 @@ def get_data():
                 'callsign': data[key][16]
             }
 
+
 def main():
     with make_client(endpoint=endpoint, appkey=appkey) as client:
         auth_finished_event = threading.Event()
