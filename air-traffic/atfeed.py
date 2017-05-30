@@ -68,7 +68,6 @@ def main():
 
         while True:
             for i in get_data():
-                print i
                 client.publish(
                     channel, message=i, callback=publish_callback)
                 time.sleep(0.001)
